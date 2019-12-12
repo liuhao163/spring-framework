@@ -63,7 +63,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		//IOC容器初始化注解BeanDefinition的读取器
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		//IOC容器初始化类扫描器
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -96,8 +98,11 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * @param basePackages the packages to scan for component classes
 	 */
 	public AnnotationConfigApplicationContext(String... basePackages) {
+		//无参构造函数，-->GenericApplicationContext-->初始化（beanFactory = new DefaultListableBeanFactory()）
 		this();
+		//扫描包
 		scan(basePackages);
+		//刷新上下文
 		refresh();
 	}
 

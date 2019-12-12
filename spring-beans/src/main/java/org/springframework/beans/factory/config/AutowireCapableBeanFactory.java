@@ -76,6 +76,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #createBean
 	 * @see #autowire
 	 * @see #autowireBeanProperties
+	 * todo 按照名称autowire
 	 */
 	int AUTOWIRE_BY_NAME = 1;
 
@@ -85,6 +86,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #createBean
 	 * @see #autowire
 	 * @see #autowireBeanProperties
+	 * todo 按照类型autowire
 	 */
 	int AUTOWIRE_BY_TYPE = 2;
 
@@ -93,6 +95,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * can be satisfied (involves resolving the appropriate constructor).
 	 * @see #createBean
 	 * @see #autowire
+	 * todo 按照构造方法自动装配
 	 */
 	int AUTOWIRE_CONSTRUCTOR = 3;
 

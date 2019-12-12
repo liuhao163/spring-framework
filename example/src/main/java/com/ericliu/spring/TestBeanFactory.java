@@ -13,5 +13,9 @@ public class TestBeanFactory {
 		ApplicationContext applicationContext= new AnnotationConfigApplicationContext("com.ericliu.spring.**");
 		TestObj obj=applicationContext.getBean(TestObj.class);
 		obj.hello();
+
+		System.out.println(applicationContext.getBeanDefinitionCount());
+		System.out.println(applicationContext.getBeanDefinitionNames());
+		System.out.println(applicationContext.getBeanNamesForType(TestObj.class));
 	}
 }
