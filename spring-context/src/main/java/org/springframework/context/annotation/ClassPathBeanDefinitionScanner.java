@@ -249,6 +249,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @return number of beans registered
 	 */
 	public int scan(String... basePackages) {
+		//todo 由AbstractApplicationContext实现，返回的是beanDefinitionMap.size()
 		int beanCountAtScanStart = this.registry.getBeanDefinitionCount();
 
 		doScan(basePackages);
@@ -258,6 +259,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 			AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 		}
 
+		//返回这次scan注册的Bean个数
 		return (this.registry.getBeanDefinitionCount() - beanCountAtScanStart);
 	}
 

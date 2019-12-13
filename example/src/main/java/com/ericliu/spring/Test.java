@@ -8,7 +8,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * Create time: 2019/12/04
  * Description:
  */
-public class TestBeanFactory {
+public class Test {
+
 	public static void main(String[] args) {
 		ApplicationContext applicationContext= new AnnotationConfigApplicationContext("com.ericliu.spring.**");
 		TestObj obj=applicationContext.getBean(TestObj.class);
