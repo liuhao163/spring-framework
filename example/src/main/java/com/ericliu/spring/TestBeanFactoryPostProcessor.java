@@ -23,7 +23,13 @@ public class TestBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 				BeanDefinition beanDefinition=beanFactory.getBeanDefinition(beanName);
 				System.out.println("修改name值");
 				beanDefinition.getPropertyValues().add("name", "liuhao-postProcessor");
+			}else if (beanName.equals("testObjImplWithOutAnnoation")){
+				BeanDefinition beanDefinition=beanFactory.getBeanDefinition(beanName);
+				System.out.println("修改name值withOutAnnoation");
+				beanDefinition.getPropertyValues().add("name", "liuhao-without annoation -postProcessor");
 			}
+
+
 		}
 		System.out.println("======TestBeanFactoryPostProcessor over=======");
 	}
