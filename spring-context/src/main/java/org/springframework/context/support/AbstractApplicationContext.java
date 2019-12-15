@@ -524,11 +524,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			//预处理，折纸beanFactory。
+			//预处理，设置beanFactory。
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				//在beanFactory都设置好以后，容器根据使用场景往往还需要对applicaitonContext,或者beanfactory做特殊处理
+				// 如：web容器注入一些重要资源（类似Application的属性和ServletContext的属性），我们可以实现该方法
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
