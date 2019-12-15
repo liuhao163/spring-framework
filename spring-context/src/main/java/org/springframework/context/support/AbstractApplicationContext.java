@@ -656,8 +656,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
-		//设置BeanPostProcessor
+		//设置ApplicationContextAwareProcessor实现了BeanPostProcessor，作用：程序可以获取ApplicationContext
+		// 例：我们程序中自定义MyApplicationContextAware实现ApplicationContextAware接口
+		// ApplicationContextAwareProcessor在bean初始化前会调用，postProcessBeforeInitialization然后调用MyApplicationContextAware.setApplictionContext
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+		//添加忽略规则，因为在Bean实例化过程中，这些依赖未必会实例化，所以选择忽略，如果bean需要这些依赖，可以采用set等方式。
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -667,6 +670,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// BeanFactory interface not registered as resolvable type in a plain factory.
 		// MessageSource registered (and found for autowiring) as a bean.
+		//设置自动装配的规则
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
