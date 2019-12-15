@@ -1,9 +1,5 @@
 package com.ericliu.spring;
 
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-
 /**
  * @Author: liuhaoeric
  * Create time: 2019/12/04
@@ -13,7 +9,7 @@ public class TestObjImplWithOutAnnoation implements TestObj  {
 
 	private String name="";
 
-	@PostConstruct
+//	@PostConstruct
 	public void init(){
 		System.out.println("init");
 	}

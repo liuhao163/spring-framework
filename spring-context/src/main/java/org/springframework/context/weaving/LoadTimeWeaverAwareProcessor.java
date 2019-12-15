@@ -93,6 +93,7 @@ public class LoadTimeWeaverAwareProcessor implements BeanPostProcessor, BeanFact
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof LoadTimeWeaverAware) {
+			//从容器中获取loadTimeWeaver，然后添加到LoadTimeWeaverAware中
 			LoadTimeWeaver ltw = this.loadTimeWeaver;
 			if (ltw == null) {
 				Assert.state(this.beanFactory != null,
