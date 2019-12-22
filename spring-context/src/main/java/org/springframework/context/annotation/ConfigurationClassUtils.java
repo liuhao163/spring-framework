@@ -125,7 +125,7 @@ abstract class ConfigurationClassUtils {
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
-		else if (config != null || isConfigurationCandidate(metadata)) {
+		else if (config != null || isConfigurationCandidate(metadata)) {//有Component、ImportReousrce、Import、ComponentScan、Bean等注解
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
 		else {

@@ -12,10 +12,9 @@ import org.springframework.context.annotation.FilterType;
  * Create time: 2019/12/15
  * Description:
  */
-@ComponentScan(value = "com.ericliu.spring.**", includeFilters = {
-		@ComponentScan.Filter(type = FilterType.CUSTOM, classes = {MyTypeFilter.class})
-}, useDefaultFilters = true)//这里要写true否则，component等注解都无法使用
-@Configuration
-@EnableLoadTimeWeaving
-public class Configure {
-}
+//@ComponentScan(value = "com.ericliu.spring.**", includeFilters = {
+//		@ComponentScan.Filter(type = FilterType.CUSTOM, classes = {MyTypeFilter.class})
+//}, useDefaultFilters = true)//这里要写true否则，component等注解都无法使用
+//@Configuration
+//public class Configure {
+//}
