@@ -206,20 +206,23 @@ final class PostProcessorRegistrationDelegate {
 
 	public static void registerBeanPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) {
-
+		//获取所有的BeanPostProcessor，这里为什么不用applicationContext.getBeanNamesForType？？
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
 		// Register BeanPostProcessorChecker that logs an info message when
 		// a bean is created during BeanPostProcessor instantiation, i.e. when
 		// a bean is not eligible for getting processed by all BeanPostProcessors.
+		////bean不是基础BeanPostProcessor && bean的Role不是ROLE_INFRASTRUCTURE && beanFactory.getBeanPostProcessorCount()<beanPostProcessorTargetCount
 		int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
 		beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
 
 		// Separate between BeanPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
+		//将BeanPostProcessor分类
+		//对BeanPostProcessors分组，分成:PriorityOrdered，Ordered，nonOrdered，internal(属于MergedBeanDefinitionPostProcessor)
 		List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
 		List<BeanPostProcessor> internalPostProcessors = new ArrayList<>();
-		List<String> orderedPostProcessorNames = new ArrayList<>();
+		List<String> orderedPostProcessorNames = new ArrayList<>();//todo 同理，这里为什么是orderedPostProcessorNames，为什么不和priorityOrderedPostProcessors逻辑
 		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
 		for (String ppName : postProcessorNames) {
 			if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
@@ -236,6 +239,8 @@ final class PostProcessorRegistrationDelegate {
 				nonOrderedPostProcessorNames.add(ppName);
 			}
 		}
+
+		//执行顺序是PriorityOrdered->Ordered->nonOrdered->internal-->ApplicationListenerDetector
 
 		// First, register the BeanPostProcessors that implement PriorityOrdered.
 		sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
@@ -270,6 +275,8 @@ final class PostProcessorRegistrationDelegate {
 
 		// Re-register post-processor for detecting inner beans as ApplicationListeners,
 		// moving it to the end of the processor chain (for picking up proxies etc).
+		//注册一个特殊的BeanPostProcessor，ApplicationListenerDetector是一个修饰器类，他会见ApplicationListener重新注册给application。
+		//这就是多一个参数applicationContext的一一，在最后一位
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(applicationContext));
 	}
 
@@ -343,6 +350,7 @@ final class PostProcessorRegistrationDelegate {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
+			//bean不是基础BeanPostProcessor && bean的Role不是ROLE_INFRASTRUCTURE && beanFactory.getBeanPostProcessorCount()<beanPostProcessorTargetCount
 			if (!(bean instanceof BeanPostProcessor) && !isInfrastructureBean(beanName) &&
 					this.beanFactory.getBeanPostProcessorCount() < this.beanPostProcessorTargetCount) {
 				if (logger.isInfoEnabled()) {
