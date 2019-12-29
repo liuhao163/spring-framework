@@ -553,6 +553,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				onRefresh();
 
 				// Check for listener beans and register them.
+				//注册定义的ApplicationEvent
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
