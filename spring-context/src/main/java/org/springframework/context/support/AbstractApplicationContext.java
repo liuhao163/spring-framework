@@ -516,7 +516,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
-				//todo bookmark 注册ApplicationEventMulticaster 默认 SimpleApplicationEventMulticaster 单独拎出来在看
+				//todo 注册ApplicationEventMulticaster 默认 SimpleApplicationEventMulticaster 单独拎出来在看
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
@@ -528,6 +528,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				//todo mark
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
@@ -853,6 +854,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Register a default embedded value resolver if no bean post-processor
 		// (such as a PropertyPlaceholderConfigurer bean) registered any before:
 		// at this point, primarily for resolution in annotation attribute values.
+		//添加StringValueResolver，例如@Value注解等处理方式。todo 以后单聊
 		if (!beanFactory.hasEmbeddedValueResolver()) {
 			beanFactory.addEmbeddedValueResolver(strVal -> getEnvironment().resolvePlaceholders(strVal));
 		}
@@ -867,9 +869,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.setTempClassLoader(null);
 
 		// Allow for caching all bean definition metadata, not expecting further changes.
+		//设置configurationFrozen，beanDefinitionNames赋值frozenBeanDefinitionNames。表情这些beanDefinition属性不能再被修改
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
+		//todo mark 重点方法
 		beanFactory.preInstantiateSingletons();
 	}
 
