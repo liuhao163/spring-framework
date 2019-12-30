@@ -1,4 +1,4 @@
-package com.ericliu.spring.listerner;
+package com.ericliu.spring.listener;
 
 import org.springframework.context.ApplicationEvent;
 

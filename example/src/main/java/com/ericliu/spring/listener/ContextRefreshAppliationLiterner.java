@@ -1,10 +1,8 @@
-package com.ericliu.spring.listerner;
+package com.ericliu.spring.listener;
 
-import com.ericliu.spring.scaner.LiuHaoMyAnnotionTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationContextEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 /**
