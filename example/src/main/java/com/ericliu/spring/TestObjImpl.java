@@ -24,6 +24,10 @@ public class TestObjImpl implements TestObj , InitializingBean {
 
 	private String name="";
 
+	@Autowired
+	private TestObjImplWithOutAnnoation testObjImplWithOutAnnoation;
+
+
 	public TestObjImpl() {
 		System.out.println("构造方法");
 	}
