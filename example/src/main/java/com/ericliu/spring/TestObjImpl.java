@@ -10,6 +10,7 @@ import org.springframework.beans.factory.config.InstantiationAwareBeanPostProces
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +21,7 @@ import javax.annotation.PostConstruct;
  * Description:
  */
 @Component
+@Conditional({TestCondition.class})
 public class TestObjImpl implements TestObj , InitializingBean {
 
 	private String name="";
