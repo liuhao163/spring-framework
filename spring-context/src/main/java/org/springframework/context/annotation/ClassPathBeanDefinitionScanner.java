@@ -249,7 +249,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @return number of beans registered
 	 */
 	public int scan(String... basePackages) {
-		//todo 由AbstractApplicationContext实现，返回的是beanDefinitionMap.size()
+		//todo 由AbstractApplicationContext.getBeanFactory()-->GenericApplicationContext.DefaultListableBeanFactory-->beanDefinitionMap.size()
 		int beanCountAtScanStart = this.registry.getBeanDefinitionCount();
 
 		doScan(basePackages);

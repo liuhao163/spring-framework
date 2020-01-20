@@ -491,8 +491,9 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	protected Resource[] findPathMatchingResources(String locationPattern) throws IOException {
 		String rootDirPath = determineRootDir(locationPattern);
 		String subPattern = locationPattern.substring(rootDirPath.length());
-		//继续调用getResources-->这时候因为classpath*:已经被替换掉会走到findAllClassPathResources分支
-		// 返回rootDirPath对应的数组
+		//继续调用getResources-->这时候因为classpath*:已经被替换掉会走到findAllClassPathResources分支,
+		// 在findAllClassPathResources里加载rootDirPath对应的Reousrce，因为是目录所以数组有几个basePackage就有几个location
+		// 如：URL [file:<绝对路径>/<rootDirPath>/]
 		Resource[] rootDirResources = getResources(rootDirPath);
 		Set<Resource> result = new LinkedHashSet<>(16);
 		for (Resource rootDirResource : rootDirResources) {
@@ -513,6 +514,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 				result.addAll(doFindPathMatchingJarResources(rootDirResource, rootDirUrl, subPattern));
 			}
 			else {
+				//主要是执行这里的逻辑，去rootDirResource查找符合subPattern的resource（文件）
 				result.addAll(doFindPathMatchingFileResources(rootDirResource, subPattern));
 			}
 		}
@@ -797,6 +799,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		}
 		for (File content : listDirectory(dir)) {
 			String currPath = StringUtils.replace(content.getAbsolutePath(), File.separator, "/");
+			//如果是目录，且和fullPattern匹配递归去子目录开始查找
 			if (content.isDirectory() && getPathMatcher().matchStart(fullPattern, currPath + "/")) {
 				if (!content.canRead()) {
 					if (logger.isDebugEnabled()) {

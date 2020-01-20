@@ -231,6 +231,7 @@ public class AntPathMatcher implements PathMatcher {
 			if ("**".equals(pattDir)) {
 				break;
 			}
+			//正则匹配
 			if (!matchStrings(pattDir, pathDirs[pathIdxStart], uriTemplateVariables)) {
 				return false;
 			}
