@@ -277,13 +277,16 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
 		Assert.notNull(locationPattern, "Location pattern must not be null");
+		//包含ClassPath*:
 		if (locationPattern.startsWith(CLASSPATH_ALL_URL_PREFIX)) {
 			// a class path resource (multiple resources for same name possible)
 			if (getPathMatcher().isPattern(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()))) {
 				// a class path resource pattern
+				//包含特殊字符 * ? {}在findPathMatchingResources中会去掉这些特殊字符，在调用getResources，走到else的分支
 				return findPathMatchingResources(locationPattern);
 			}
 			else {
+				//调用doFindAllClassPathResources加载所有的类
 				// all class path resources with the given name
 				return findAllClassPathResources(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()));
 			}
@@ -489,8 +492,8 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @see org.springframework.util.PathMatcher
 	 */
 	protected Resource[] findPathMatchingResources(String locationPattern) throws IOException {
-		String rootDirPath = determineRootDir(locationPattern);
-		String subPattern = locationPattern.substring(rootDirPath.length());
+		String rootDirPath = determineRootDir(locationPattern);//eg: classpath*:com/ericliu/spring/**/**/*.class-->classpath*:com/ericliu/spring/
+		String subPattern = locationPattern.substring(rootDirPath.length());//eg: classpath*:com/ericliu/spring/**/**/*.class--> **/**/*.class
 		//继续调用getResources-->这时候因为classpath*:已经被替换掉会走到findAllClassPathResources分支,
 		// 在findAllClassPathResources里加载rootDirPath对应的Reousrce，因为是目录所以数组有几个basePackage就有几个location
 		// 如：URL [file:<绝对路径>/<rootDirPath>/]
