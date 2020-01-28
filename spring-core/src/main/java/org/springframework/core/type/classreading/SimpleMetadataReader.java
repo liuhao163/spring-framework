@@ -46,15 +46,17 @@ final class SimpleMetadataReader implements MetadataReader {
 
 
 	SimpleMetadataReader(Resource resource, @Nullable ClassLoader classLoader) throws IOException {
+		//观察者
 		SimpleAnnotationMetadataReadingVisitor visitor = new SimpleAnnotationMetadataReadingVisitor(classLoader);
 		getClassReader(resource).accept(visitor, PARSING_OPTIONS);
 		this.resource = resource;
-		this.annotationMetadata = visitor.getMetadata();
+		this.annotationMetadata = visitor.getMetadata();//获取MetaData
 	}
 
 	private static ClassReader getClassReader(Resource resource) throws IOException {
 		try (InputStream is = new BufferedInputStream(resource.getInputStream())) {
 			try {
+				//spring asm 创建classReader操总字节码
 				return new ClassReader(is);
 			}
 			catch (IllegalArgumentException ex) {

@@ -207,6 +207,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		this.includeFilters.add(new AnnotationTypeFilter(Component.class));
 		ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();
 		try {
+			//javax.annotation.ManagedBean
 			this.includeFilters.add(new AnnotationTypeFilter(
 					((Class<? extends Annotation>) ClassUtils.forName("javax.annotation.ManagedBean", cl)), false));
 			logger.trace("JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning");
@@ -215,6 +216,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			// JSR-250 1.1 API (as included in Java EE 6) not available - simply skip.
 		}
 		try {
+			//javax.inject.Named
 			this.includeFilters.add(new AnnotationTypeFilter(
 					((Class<? extends Annotation>) ClassUtils.forName("javax.inject.Named", cl)), false));
 			logger.trace("JSR-330 'javax.inject.Named' annotation found and supported for component scanning");
@@ -430,15 +432,24 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				if (resource.isReadable()) {
 					try {
 						//todo mark CachingMetadataReaderFactory
+						//利用spring-asm从class文件获取metadataReader，见jvm对class文件分析
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
+						//通过metadataReader判断class是否符合注入的条件，用TypeFilter.match来判断
 						if (isCandidateComponent(metadataReader)) {
 							ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
 							sbd.setResource(resource);
 							sbd.setSource(resource);
+							/**
+							 * 	isCandidateComponent(sbd)为true
+							 * 		isIndependent不是内部类（内部类对应的外部类为空，且没有static内部类）
+							 * 		isConcrete：不是借口和抽象类 || 是抽象类，但是metadata有Lookup注解
+							 * 	加入到结果集
+							 */
 							if (isCandidateComponent(sbd)) {
 								if (debugEnabled) {
 									logger.debug("Identified candidate component class: " + resource);
 								}
+								//
 								candidates.add(sbd);
 							}
 							else {
@@ -497,7 +508,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			}
 		}
 		for (TypeFilter tf : this.includeFilters) {
+			//typteFilter.match返回true
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
+				//判断condintional是否符合条件，注意里面实现的方法名是shouldSkip这里没有注解或者符合条件返回false
 				return isConditionMatch(metadataReader);
 			}
 		}
@@ -515,6 +528,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			this.conditionEvaluator =
 					new ConditionEvaluator(getRegistry(), this.environment, this.resourcePatternResolver);
 		}
+		//是否满足Condintion注解的条件，注意方法明是shouldSkip这里没有注解或者符合条件返回false
 		return !this.conditionEvaluator.shouldSkip(metadataReader.getAnnotationMetadata());
 	}
 
@@ -528,6 +542,8 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 */
 	protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
 		AnnotationMetadata metadata = beanDefinition.getMetadata();
+		//isIndependent不是内部类（内部类对应的外部类为空，且没有static内部类）
+		//isConcrete：不是借口和抽象类 || 是抽象类，但是metadata有Lookup注解
 		return (metadata.isIndependent() && (metadata.isConcrete() ||
 				(metadata.isAbstract() && metadata.hasAnnotatedMethods(Lookup.class.getName()))));
 	}
