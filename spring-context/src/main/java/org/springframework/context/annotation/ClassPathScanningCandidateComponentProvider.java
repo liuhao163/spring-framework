@@ -431,7 +431,6 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				}
 				if (resource.isReadable()) {
 					try {
-						//todo mark CachingMetadataReaderFactory
 						//利用spring-asm从class文件获取metadataReader，见jvm对class文件分析
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
 						//通过metadataReader判断class是否符合注入的条件，用TypeFilter.match来判断
