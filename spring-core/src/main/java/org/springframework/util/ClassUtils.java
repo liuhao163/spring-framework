@@ -950,8 +950,8 @@ public abstract class ClassUtils {
 		if (nameEndIndex == -1) {
 			nameEndIndex = className.length();
 		}
-		String shortName = className.substring(lastDotIndex + 1, nameEndIndex);
-		shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);
+		String shortName = className.substring(lastDotIndex + 1, nameEndIndex);//cglib的类 aop.target.HelloImpl$$EnhancerByCGLIB$$494b5b61-->HelloImpl
+		shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);//innerClass a$B-->a.b
 		return shortName;
 	}
 
