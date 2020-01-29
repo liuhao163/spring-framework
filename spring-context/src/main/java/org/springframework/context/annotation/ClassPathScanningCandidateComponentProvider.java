@@ -311,6 +311,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return a corresponding Set of autodetected bean definitions
 	 */
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
+		// spring5.0开始索引 开启的话生成文件META-INF/spring.components 后面加载直接从本地文件读取（一般不建议开启 spring.index.ignore=true）
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
 		}
@@ -441,7 +442,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 							/**
 							 * 	isCandidateComponent(sbd)为true
 							 * 		isIndependent不是内部类（内部类对应的外部类为空，且没有static内部类）
-							 * 		isConcrete：不是借口和抽象类 || 是抽象类，但是metadata有Lookup注解
+							 * 		isConcrete：不是接口和抽象类 || 是抽象类，但是metadata有Lookup注解
 							 * 	加入到结果集
 							 */
 							if (isCandidateComponent(sbd)) {
