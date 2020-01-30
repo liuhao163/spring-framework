@@ -290,12 +290,19 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 				if (candidate instanceof AnnotatedBeanDefinition) {
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
-				//注册BeanDefinition todo
+				//注册BeanDefinition
+				// 1.!this.registry.containsBeanDefinition(beanName)
+				// 2.如果beanName存在，beanDefinition和existingDef兼容，说明不用再次注册
+				// 	（不是ScannedGenericBeanDefinition or source相同 or beanDefinition==existingDefinition）
+				// 3.如果beanName存在，还不兼容抛异常ConflictingBeanDefinitionException
 				if (checkCandidate(beanName, candidate)) {
+					//创建BeanDefinitionHolder
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
 					definitionHolder =
 							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+					//放到beanDefinitions结果集
 					beanDefinitions.add(definitionHolder);
+					//注册到registry中
 					registerBeanDefinition(definitionHolder, this.registry);
 				}
 			}
@@ -341,17 +348,21 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * bean definition has been found for the specified name
 	 */
 	protected boolean checkCandidate(String beanName, BeanDefinition beanDefinition) throws IllegalStateException {
+		//不含有beanName返回true
 		if (!this.registry.containsBeanDefinition(beanName)) {
 			return true;
 		}
+		//从registry通过beanName获取existingDef，如果存在OriginatingBeanDefinition赋值给existingDef
 		BeanDefinition existingDef = this.registry.getBeanDefinition(beanName);
 		BeanDefinition originatingDef = existingDef.getOriginatingBeanDefinition();
 		if (originatingDef != null) {
 			existingDef = originatingDef;
 		}
+		//如果beanDefinition和existingDef兼容，说明不用再次注入。（不是ScannedGenericBeanDefinition or source相同 or beanDefinition==existingDefinition）
 		if (isCompatible(beanDefinition, existingDef)) {
 			return false;
 		}
+		//如果存在，不兼容说明bean和存在的bean存在冲突抛异常
 		throw new ConflictingBeanDefinitionException("Annotation-specified bean name '" + beanName +
 				"' for bean class [" + beanDefinition.getBeanClassName() + "] conflicts with existing, " +
 				"non-compatible bean definition of same name and class [" + existingDef.getBeanClassName() + "]");
@@ -369,6 +380,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * new definition to be skipped in favor of the existing definition
 	 */
 	protected boolean isCompatible(BeanDefinition newDefinition, BeanDefinition existingDefinition) {
+		//existingDefinition不是ScannedGenericBeanDefinition or (newDefinition.Source==existingDefinition.Source) or newDefinition==existingDefinition
 		return (!(existingDefinition instanceof ScannedGenericBeanDefinition) ||  // explicitly registered overriding bean
 				(newDefinition.getSource() != null && newDefinition.getSource().equals(existingDefinition.getSource())) ||  // scanned same file twice
 				newDefinition.equals(existingDefinition));  // scanned equivalent class twice
