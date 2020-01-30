@@ -280,15 +280,17 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 				//从definition的Annotated获取Scope注解，根据scope注解获取ScopeMetadata
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
-				//生成beanName
+				//生成beanName,从Commponent，或者javax.annotation.ManagedBean、javax.inject.Named的value取，或者系统默认生成
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
-				//todo mark
+				//设置beanDefinition的默认属性，设置是否参与自动注入
 				if (candidate instanceof AbstractBeanDefinition) {
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
 				}
+				//通过注解的MetaData设置属性，用来覆盖默认属性如 lazyInit,Primary,DependsOn,Role,Description属性
 				if (candidate instanceof AnnotatedBeanDefinition) {
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
+				//注册BeanDefinition todo
 				if (checkCandidate(beanName, candidate)) {
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
 					definitionHolder =
@@ -309,6 +311,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 */
 	protected void postProcessBeanDefinition(AbstractBeanDefinition beanDefinition, String beanName) {
 		beanDefinition.applyDefaults(this.beanDefinitionDefaults);
+		//是否参与自动注入，如果autowireCandidatePatterns和beanName match就注入
 		if (this.autowireCandidatePatterns != null) {
 			beanDefinition.setAutowireCandidate(PatternMatchUtils.simpleMatch(this.autowireCandidatePatterns, beanName));
 		}
