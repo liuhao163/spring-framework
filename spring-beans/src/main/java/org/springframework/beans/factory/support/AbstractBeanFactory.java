@@ -1317,6 +1317,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 			if (mbd == null || mbd.stale) {
 				previous = mbd;
+				//没有parentBean,直接clone或者create
 				if (bd.getParentName() == null) {
 					// Use copy of given root bean definition.
 					if (bd instanceof RootBeanDefinition) {
@@ -1328,13 +1329,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 				else {
 					// Child bean definition: needs to be merged with parent.
+					//获取parentBean
 					BeanDefinition pbd;
 					try {
 						String parentBeanName = transformedBeanName(bd.getParentName());
 						if (!beanName.equals(parentBeanName)) {
+							//beanName和parentBeanName不相等，后去parentBean
 							pbd = getMergedBeanDefinition(parentBeanName);
 						}
 						else {
+							//如果相等，parentFactory是ConfigurableBeanFactory，merge(这里本质上是递归的方式，知道所有的parent都merge)
 							BeanFactory parent = getParentBeanFactory();
 							if (parent instanceof ConfigurableBeanFactory) {
 								pbd = ((ConfigurableBeanFactory) parent).getMergedBeanDefinition(parentBeanName);
@@ -1351,8 +1355,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 								"Could not resolve parent bean definition '" + bd.getParentName() + "'", ex);
 					}
 					// Deep copy with overridden values.
-					mbd = new RootBeanDefinition(pbd);
-					mbd.overrideFrom(bd);
+					mbd = new RootBeanDefinition(pbd);//创建parent的Root
+					mbd.overrideFrom(bd);//merage
 				}
 
 				// Set default singleton scope, if not configured before.
