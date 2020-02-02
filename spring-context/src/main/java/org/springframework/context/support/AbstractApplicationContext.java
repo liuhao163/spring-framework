@@ -528,7 +528,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
-				//todo mark
+				//实例化所有的non-lazy-init的singletons的对象
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
@@ -845,7 +845,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * initializing all remaining singleton beans.
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
-		// Initialize conversion service for this context.
+		// Initialize conversion service for this context. todo mark以后单看
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(
@@ -870,11 +870,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.setTempClassLoader(null);
 
 		// Allow for caching all bean definition metadata, not expecting further changes.
-		//设置configurationFrozen，beanDefinitionNames赋值frozenBeanDefinitionNames。表情这些beanDefinition属性不能再被修改
+		//设置configurationFrozen，beanDefinitionNames赋值frozenBeanDefinitionNames。 表示这些beanDefinition属性不能再被修改
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
-		//todo mark 重点方法
+		//实例化对象 **重点方法**
 		beanFactory.preInstantiateSingletons();
 	}
 
@@ -888,11 +888,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		clearResourceCaches();
 
 		// Initialize lifecycle processor for this context.
-		//初始化LifecycleProcessor，todo mark 作用还需要单独了解
+		//注册、初始化LifecycleProcessor，默认是DefaultLifecycleProcessor
 		initLifecycleProcessor();
 
 		// Propagate refresh to lifecycle processor first.
-		//调用上面的LifecycleProcessor.onRefresh()
+		//调用上面的LifecycleProcessor.onRefresh()，
+		//startBeans(获取所有的Lifecycle的实现类)-->getPhase(遍历所有的Lifecycle)-->然后分别执行start
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.发送ContextRefreshedEvent事件
