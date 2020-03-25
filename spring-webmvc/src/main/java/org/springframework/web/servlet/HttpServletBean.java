@@ -149,13 +149,16 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	public final void init() throws ServletException {
 
 		// Set bean properties from init parameters.
+		//将servletConfig的initParam参数保存到pvs中
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 		if (!pvs.isEmpty()) {
 			try {
+				//BeanWrapper实际是BeanWrapperImpl【DispatcherServlet】
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
 				initBeanWrapper(bw);
+				//为BeanWrapper赋值，init-Param的name对应的是bw的属性。。。这段不仔细看真看不出来 initParam怎么赋值的
 				bw.setPropertyValues(pvs, true);
 			}
 			catch (BeansException ex) {

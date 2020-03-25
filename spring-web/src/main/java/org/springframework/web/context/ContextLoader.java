@@ -289,6 +289,7 @@ public class ContextLoader {
 						ApplicationContext parent = loadParentContext(servletContext);
 						cwac.setParent(parent);
 					}
+					// 该方法会调用setConfigLocation，将xml中的contextConfigLocation传递给WebApplicationContext,还会调用refresh方法执行容器的bean初始化等操作
 					configureAndRefreshWebApplicationContext(cwac, servletContext);
 				}
 			}
