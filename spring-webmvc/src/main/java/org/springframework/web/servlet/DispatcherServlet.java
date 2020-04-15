@@ -498,6 +498,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
+	 * 初始化组件
 	 */
 	protected void initStrategies(ApplicationContext context) {
 		//MultipartResolver,不注册不支持上传文件，默认是StandardServletMultipartResolver,需要自己注册
@@ -506,12 +507,17 @@ public class DispatcherServlet extends FrameworkServlet {
 		initLocaleResolver(context);
 		//主题 默认调用getDefaultStrategy(),见：DispatchServlet.properties，org.springframework.web.servlet.theme.FixedThemeResolver
 		initThemeResolver(context);
-		//重要组件，detectAllHandlerMappings？从context包含父类取所有的HandlerMapping:取一个，或者从DispatchServlet.properties
+		//重要组件，detectAllHandlerMappings？从context包含父类取所有的HandlerMapping or 取一个，为空从DispatchServlet.properties
 		initHandlerMappings(context);
+		//重要组件，detectAllHandlerMappings？从context包含父类取所有的HandlerAdapter or 取一个，为空从DispatchServlet.properties
 		initHandlerAdapters(context);
+		//异常处理，同上类似的逻辑
 		initHandlerExceptionResolvers(context);
+		//Request->ViewName
 		initRequestToViewNameTranslator(context);
+		//ViewResolver
 		initViewResolvers(context);
+		//flashMapManager
 		initFlashMapManager(context);
 	}
 
