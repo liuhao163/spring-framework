@@ -500,9 +500,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
 	 */
 	protected void initStrategies(ApplicationContext context) {
+		//MultipartResolver,不注册不支持上传文件，默认是StandardServletMultipartResolver,需要自己注册
 		initMultipartResolver(context);
+		//i18n 默认调用getDefaultStrategy(),见：DispatchServlet.properties，org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
 		initLocaleResolver(context);
+		//主题 默认调用getDefaultStrategy(),见：DispatchServlet.properties，org.springframework.web.servlet.theme.FixedThemeResolver
 		initThemeResolver(context);
+		//重要组件，detectAllHandlerMappings？从context包含父类取所有的HandlerMapping:取一个，或者从DispatchServlet.properties
 		initHandlerMappings(context);
 		initHandlerAdapters(context);
 		initHandlerExceptionResolvers(context);
@@ -593,6 +597,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
 
+		//取所有注册的HandlerMapping（包含父类的context）
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerMapping> matchingBeans =
@@ -604,6 +609,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 		else {
+			//
 			try {
 				HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
 				this.handlerMappings = Collections.singletonList(hm);
@@ -612,7 +618,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// Ignore, we'll add a default HandlerMapping later.
 			}
 		}
-
+		//从DispatchServlet.properties取
 		// Ensure we have at least one HandlerMapping, by registering
 		// a default HandlerMapping if no other mappings are found.
 		if (this.handlerMappings == null) {
