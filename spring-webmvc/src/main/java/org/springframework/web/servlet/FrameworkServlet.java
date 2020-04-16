@@ -993,18 +993,24 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 		Throwable failureCause = null;
 
-		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
-		LocaleContext localeContext = buildLocaleContext(request);
+		//从ThreadLocal中获取上一个请求的LocaleContext
+		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();//
+		//new当前请求的LocaleContext
+		LocaleContext localeContext = buildLocaleContext(request);//SimpleLocaleContext
 
+		//从ThreadLocal中获取上一个请求的RequestAttributes(ServletRequestAttributes)
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
+		//new当前请求的ServletRequestAttributes
 		ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
 
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 		asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
 
+		//保存进ThreadLocal中
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			//抽象方法具体实现在DeipatchServlet
 			doService(request, response);
 		}
 		catch (ServletException | IOException ex) {
@@ -1017,6 +1023,11 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 
 		finally {
+			//恢复previousLocaleContext，previousAttributes
+			//这里是我没太看明白的地方，说下我的猜测：
+			// 1、previousLocaleContext,previousAttributes大概率为空这里就重置了ThreadLocal
+			// 2、previousLocaleContext,previousAttributes不为空，说明当前线程处理别的请求，所以
+			// 		在doservice时候context用的是current的值，请求处理完了将值还原称之前的值。
 			resetContextHolders(request, previousLocaleContext, previousAttributes);
 			if (requestAttributes != null) {
 				requestAttributes.requestCompleted();
