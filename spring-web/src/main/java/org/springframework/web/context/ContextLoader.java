@@ -385,6 +385,7 @@ public class ContextLoader {
 			}
 		}
 
+		//关键2 设置servletContext 和web.xml的configLocationParam 传给 ConfigurableWebApplicationContext
 		wac.setServletContext(sc);
 		String configLocationParam = sc.getInitParameter(CONFIG_LOCATION_PARAM);
 		if (configLocationParam != null) {
@@ -400,6 +401,8 @@ public class ContextLoader {
 		}
 
 		customizeContext(sc, wac);
+
+		//关键3 见ApplicationContext.refresh方法 初始化容器的bean
 		wac.refresh();
 	}
 
