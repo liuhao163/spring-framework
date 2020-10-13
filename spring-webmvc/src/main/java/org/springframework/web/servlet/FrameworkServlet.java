@@ -994,16 +994,17 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 		Throwable failureCause = null;
 
-		//从ThreadLocal中获取上一个请求的LocaleContext
+		//从当前线程中获取上一个请求的LocaleContext
 		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();//
 		//new当前请求的LocaleContext
 		LocaleContext localeContext = buildLocaleContext(request);//SimpleLocaleContext
 
-		//从ThreadLocal中获取上一个请求的RequestAttributes(ServletRequestAttributes)
+		//从当前线程中获取上一个请求的RequestAttributes(ServletRequestAttributes)
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
 		//new当前请求的ServletRequestAttributes
 		ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
 
+		//todo
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 		asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
 
@@ -1024,11 +1025,10 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 
 		finally {
-			//恢复previousLocaleContext，previousAttributes
-			//这里是我没太看明白的地方，说下我的猜测：
-			// 1、previousLocaleContext,previousAttributes大概率为空这里就重置了ThreadLocal
-			// 2、previousLocaleContext,previousAttributes不为空，说明当前线程处理别的请求，所以
-			// 		在doservice时候context用的是current的值，请求处理完了将值还原称之前的值。
+			//重置previousLocaleContext，previousAttributes
+			//这里是我没太看明白的地方，说下我的猜测：doservice中有可能对当前的context和attributes进行修改，这时候为了外部的filter没有改变需要将之前的值设置回去
+			// 	这里优先处理当前请求，当前请求处理完了（在doservice时候context用的是current的值，）
+			// 	请求处理完了将值还原成之前的值。（previousLocaleContext,previousAttributes）
 			resetContextHolders(request, previousLocaleContext, previousAttributes);
 			if (requestAttributes != null) {
 				requestAttributes.requestCompleted();
