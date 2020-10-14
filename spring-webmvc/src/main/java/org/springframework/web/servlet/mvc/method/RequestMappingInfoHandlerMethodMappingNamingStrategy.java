@@ -39,6 +39,7 @@ public class RequestMappingInfoHandlerMethodMappingNamingStrategy
 	public static final String SEPARATOR = "#";
 
 
+	//eg:ApiController.getApi==AC#getApi
 	@Override
 	public String getName(HandlerMethod handlerMethod, RequestMappingInfo mapping) {
 		if (mapping.getName() != null) {
