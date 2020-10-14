@@ -212,7 +212,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Scan beans in the ApplicationContext, detect and register handler methods.
-	 *
+	 * 从ApplicationContext扫描所有的bean, 找到并且将handler method注册到容器中【将url和handlerMethod关联】
 	 * @see #getCandidateBeanNames()
 	 * @see #processCandidateBean
 	 * @see #handlerMethodsInitialized
@@ -221,6 +221,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		//获取application中所有的bean
 		for (String beanName : getCandidateBeanNames()) {
 			if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX)) {
+				//重点方法
 				processCandidateBean(beanName);
 			}
 		}
@@ -624,19 +625,20 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				validateMethodMapping(handlerMethod, mapping);
 				//mapping-->handlerMethod
 				this.mappingLookup.put(mapping, handlerMethod);
-				//根据mapping获取url并且将Url和mappint关联起来
+				//根据mapping获取url并且将Url和mapping关联起来
 				List<String> directUrls = getDirectUrls(mapping);
 				for (String url : directUrls) {
 					this.urlLookup.add(url, mapping);
 				}
 
-				//关联name和handlerMethod
+				//关联name【RequestMappingInfoHandlerMethodMappingNamingStrategy.getName】和handlerMethod
 				String name = null;
 				if (getNamingStrategy() != null) {
 					name = getNamingStrategy().getName(handlerMethod, mapping);
 					addMappingName(name, handlerMethod);
 				}
 
+				//corsLookup绑定handlerMethod和corsConfig,注解或者方法上带CrossOrigin
 				CorsConfiguration corsConfig = initCorsConfiguration(handler, method, mapping);
 				if (corsConfig != null) {
 					this.corsLookup.put(handlerMethod, corsConfig);
@@ -662,7 +664,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		private List<String> getDirectUrls(T mapping) {
 			List<String> urls = new ArrayList<>(1);
 			//获取mapping中的pattern，判断规范【url没有* ?等】
-			//getMappingPathPatterns 调用的是RequestMappingInfoHandlerMapping里的实现，即mapping.getPatternsCondition().getPatterns();
+			//getMappingPathPatterns【RequestMappingInfoHandlerMapping】，即mapping.getPatternsCondition().getPatterns();
 			for (String path : getMappingPathPatterns(mapping)) {
 				//getPathMatcher 返回AntPathMatcher
 				if (!getPathMatcher().isPattern(path)) {
