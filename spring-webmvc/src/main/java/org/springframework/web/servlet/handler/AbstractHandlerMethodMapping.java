@@ -282,7 +282,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		if (handlerType != null) {
 			Class<?> userType = ClassUtils.getUserClass(handlerType);
 			//遍历handler中的方法，通过getMappingForMethod返回RequestMappingInfo
-			// 通过方法上的RequestMapping注解RequestMappingInfo
+			// 通过方法上的RequestMapping注解,生成RequestMappingInfo，并且和Method关联
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
 						try {
