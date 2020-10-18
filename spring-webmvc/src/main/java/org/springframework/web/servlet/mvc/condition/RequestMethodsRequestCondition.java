@@ -111,11 +111,14 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 	@Override
 	@Nullable
 	public RequestMethodsRequestCondition getMatchingCondition(HttpServletRequest request) {
+		//Mehtod==OPTIONS && header contains Access-Control-Request-Method
 		if (CorsUtils.isPreFlightRequest(request)) {
+			//这是一个cors的请求
 			return matchPreFlight(request);
 		}
 
 		if (getMethods().isEmpty()) {
+			//如果请求是OPTIONS，跳转类型不是Error，不需要匹配定义,否则返回this
 			if (RequestMethod.OPTIONS.name().equals(request.getMethod()) &&
 					!DispatcherType.ERROR.equals(request.getDispatcherType())) {
 
@@ -124,6 +127,7 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 			return this;
 		}
 
+		//Builder在创建RequestMappingInfo时候，根据mapping设置的methods和request.getMethod进行匹配
 		return matchRequestMethod(request.getMethod());
 	}
 

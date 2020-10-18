@@ -217,30 +217,40 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	@Override
 	@Nullable
 	public RequestMappingInfo getMatchingCondition(HttpServletRequest request) {
+		//build的方法见该类的DefaultBuilder.build todo 书签
+		//RequestMappingInfo的Method和requst的method匹配
 		RequestMethodsRequestCondition methods = this.methodsCondition.getMatchingCondition(request);
 		if (methods == null) {
 			return null;
 		}
+		//RequestMappingInfo的Param和requst的param匹配
 		ParamsRequestCondition params = this.paramsCondition.getMatchingCondition(request);
 		if (params == null) {
 			return null;
 		}
+		//RequestMappingInfo的Header和requst的header匹配
 		HeadersRequestCondition headers = this.headersCondition.getMatchingCondition(request);
 		if (headers == null) {
 			return null;
 		}
+		//RequestMappingInfo的consumes和requst的consumes匹配 content-type
 		ConsumesRequestCondition consumes = this.consumesCondition.getMatchingCondition(request);
 		if (consumes == null) {
 			return null;
 		}
+		//RequestMappingInfo的produces和requst的produces匹配 accept-type
 		ProducesRequestCondition produces = this.producesCondition.getMatchingCondition(request);
 		if (produces == null) {
 			return null;
 		}
+
+		//path进行匹配
 		PatternsRequestCondition patterns = this.patternsCondition.getMatchingCondition(request);
 		if (patterns == null) {
 			return null;
 		}
+
+		//自定义的匹配
 		RequestConditionHolder custom = this.customConditionHolder.getMatchingCondition(request);
 		if (custom == null) {
 			return null;

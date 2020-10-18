@@ -276,6 +276,16 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 		RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
 		RequestCondition<?> condition = (element instanceof Class ?
 				getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
+		/*
+		这里的RequestMappingInfo 的配置
+		RequestMappingInfo(this.mappingName, patternsCondition,
+					new RequestMethodsRequestCondition(this.methods),
+					new ParamsRequestCondition(this.params),
+					new HeadersRequestCondition(this.headers),
+					new ConsumesRequestCondition(this.consumes, this.headers),
+					new ProducesRequestCondition(this.produces, this.headers, manager),
+					this.customCondition);
+		 */
 		return (requestMapping != null ? createRequestMappingInfo(requestMapping, condition) : null);
 	}
 

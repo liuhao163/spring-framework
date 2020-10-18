@@ -377,10 +377,12 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	@Override
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+		//获取urlPath用于查找HandlerMethod
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		request.setAttribute(LOOKUP_PATH, lookupPath);
 		this.mappingRegistry.acquireReadLock();
 		try {
+			//查找HandlerMethod
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		} finally {
@@ -401,6 +403,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	@Nullable
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
 		List<Match> matches = new ArrayList<>();
+		//查找到符合要求的RequestMappingInfo
 		List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
 		if (directPathMatches != null) {
 			addMatchingMappings(directPathMatches, matches, request);
@@ -440,8 +443,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	private void addMatchingMappings(Collection<T> mappings, List<Match> matches, HttpServletRequest request) {
 		for (T mapping : mappings) {
+			//返回符合条件的RequestMappingInfo
 			T match = getMatchingMapping(mapping, request);
 			if (match != null) {
+				//根据RequestMapping获取HandlerMethod
 				matches.add(new Match(match, this.mappingRegistry.getMappings().get(mapping)));
 			}
 		}
@@ -579,6 +584,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		 */
 		@Nullable
 		public List<T> getMappingsByUrl(String urlPath) {
+			//返回requestMappinginfo
 			return this.urlLookup.get(urlPath);
 		}
 
