@@ -217,7 +217,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	@Override
 	@Nullable
 	public RequestMappingInfo getMatchingCondition(HttpServletRequest request) {
-		//build的方法见该类的DefaultBuilder.build todo 书签
+		//build的方法见该类的DefaultBuilder.build
 		//RequestMappingInfo的Method和requst的method匹配
 		RequestMethodsRequestCondition methods = this.methodsCondition.getMatchingCondition(request);
 		if (methods == null) {

@@ -91,7 +91,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 	 */
 	@Override
 	protected RequestMappingInfo getMatchingMapping(RequestMappingInfo info, HttpServletRequest request) {
-		//根据容器初始化时候设置好的RequestMappingInfo获取一个符合条件的RequestMappingInfo【new 对象】 todo 书签
+		//根据容器初始化时候设置好的RequestMappingInfo获取一个符合条件的RequestMappingInfo【new 对象】
 		return info.getMatchingCondition(request);
 	}
 

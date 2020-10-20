@@ -382,8 +382,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		request.setAttribute(LOOKUP_PATH, lookupPath);
 		this.mappingRegistry.acquireReadLock();
 		try {
-			//查找HandlerMethod
+			//查找HandlerMethod 优先通过Path找，没找到轮询mappingLookup，之后对找到的HandlerMethod排序找到最合适的HandlerMethod
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
+			//re-create bean 享元模式防止请求修改HandlerMethod
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		} finally {
 			this.mappingRegistry.releaseReadLock();
@@ -402,21 +403,28 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	@Nullable
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
+		//
 		List<Match> matches = new ArrayList<>();
-		//查找到符合要求的RequestMappingInfo
+		//通过path查找到符合要求的RequestMappingInfo
 		List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
 		if (directPathMatches != null) {
 			addMatchingMappings(directPathMatches, matches, request);
 		}
+
+		//如果通过path没找到去mappingLookup轮询一遍查找
 		if (matches.isEmpty()) {
 			// No choice but to go through all mappings...
 			addMatchingMappings(this.mappingRegistry.getMappings().keySet(), matches, request);
 		}
 
+		//不为空
 		if (!matches.isEmpty()) {
+			//根据RequestMappingInfoHandlerMapping.getMappingComparator排序Match.mapping的Compare然后取第一个
+			// todo 优先级未看
 			Comparator<Match> comparator = new MatchComparator(getMappingComparator(request));
 			matches.sort(comparator);
 			Match bestMatch = matches.get(0);
+			//取出来俩个然后优先级一样直接抛出异常意思是Handler重复"多个优先级"
 			if (matches.size() > 1) {
 				if (logger.isTraceEnabled()) {
 					logger.trace(matches.size() + " matching mappings: " + matches);
@@ -437,16 +445,17 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			handleMatch(bestMatch.mapping, lookupPath, request);
 			return bestMatch.handlerMethod;
 		} else {
+			//都没匹配到调用该方法见RequestMappingInfoHandlerMapping，其中不符合RequestMappingInfo的会抛异常
 			return handleNoMatch(this.mappingRegistry.getMappings().keySet(), lookupPath, request);
 		}
 	}
 
 	private void addMatchingMappings(Collection<T> mappings, List<Match> matches, HttpServletRequest request) {
 		for (T mapping : mappings) {
-			//返回符合条件的RequestMappingInfo
+			//返回符合条件的RequestMappingInfo，实际上是调用RequestMappingInfo.getMatchingCondition
 			T match = getMatchingMapping(mapping, request);
 			if (match != null) {
-				//根据RequestMapping获取HandlerMethod
+				//根据RequestMapping获取HandlerMethod,并且把它们加到matches里
 				matches.add(new Match(match, this.mappingRegistry.getMappings().get(mapping)));
 			}
 		}
