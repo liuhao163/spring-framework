@@ -67,14 +67,17 @@ public class HandlerExecutionChain {
 	 * (in the given order) before the handler itself executes
 	 */
 	public HandlerExecutionChain(Object handler, @Nullable HandlerInterceptor... interceptors) {
+		//handler 是 HandlerExecutionChain，规则把handler替换成参数的,interceptorList会进行merge
 		if (handler instanceof HandlerExecutionChain) {
 			HandlerExecutionChain originalChain = (HandlerExecutionChain) handler;
 			this.handler = originalChain.getHandler();
 			this.interceptorList = new ArrayList<>();
+			//merge interceptor
 			CollectionUtils.mergeArrayIntoCollection(originalChain.getInterceptors(), this.interceptorList);
 			CollectionUtils.mergeArrayIntoCollection(interceptors, this.interceptorList);
 		}
 		else {
+			//如果是MethodHandler直接赋值
 			this.handler = handler;
 			this.interceptors = interceptors;
 		}

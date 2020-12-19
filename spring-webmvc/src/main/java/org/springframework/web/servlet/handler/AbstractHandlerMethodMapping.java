@@ -423,6 +423,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			// todo 优先级未看
 			Comparator<Match> comparator = new MatchComparator(getMappingComparator(request));
 			matches.sort(comparator);
+			//排序后取第一个作为返回结果
 			Match bestMatch = matches.get(0);
 			//取出来俩个然后优先级一样直接抛出异常意思是Handler重复"多个优先级"
 			if (matches.size() > 1) {
@@ -442,6 +443,8 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				}
 			}
 			request.setAttribute(BEST_MATCHING_HANDLER_ATTRIBUTE, bestMatch.handlerMethod);
+			//为request设置值：PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE，返回对应的handlerMethod
+			//这里其实就是把mapping,和handler都返回只不过mapping放在了requst里
 			handleMatch(bestMatch.mapping, lookupPath, request);
 			return bestMatch.handlerMethod;
 		} else {

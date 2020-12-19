@@ -464,10 +464,15 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 * @see #getAdaptedInterceptors()
 	 */
 	protected HandlerExecutionChain getHandlerExecutionChain(Object handler, HttpServletRequest request) {
+		//如果是一个存在的HandlerExecutionChain返回，否则new一个HandlerExecutionChain
+		//HandlerExecutionChain的构造方法里还回在判断下Handler的类型，
+		// 如果是HandlerExecutionChain进行merge
+		// 如果是HandlerMethod会进行赋值具体见HandlerExecutionChain构造方法
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));
 
 		String lookupPath = this.urlPathHelper.getLookupPathForRequest(request, LOOKUP_PATH);
+		//todo 书签
 		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
 			if (interceptor instanceof MappedInterceptor) {
 				MappedInterceptor mappedInterceptor = (MappedInterceptor) interceptor;
