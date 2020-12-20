@@ -231,7 +231,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	@Override
 	@Nullable
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-		//通过方法上的RequestMapping注解生成一个methInfo
+		//通过方法上的RequestMapping注解生成一个meappingInfo
 		RequestMappingInfo info = createRequestMappingInfo(method);
 		if (info != null) {
 			//根据类在生成一个typeInfo
