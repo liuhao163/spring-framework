@@ -501,6 +501,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * 初始化组件
 	 */
 	protected void initStrategies(ApplicationContext context) {
+		//默认的配置见DispatcherServlet.properties
+
 		//MultipartResolver,不注册不支持上传文件，默认是StandardServletMultipartResolver,需要自己注册
 		initMultipartResolver(context);
 		//i18n 默认调用getDefaultStrategy(),见：DispatchServlet.properties，org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
