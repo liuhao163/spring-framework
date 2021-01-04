@@ -772,9 +772,11 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
 		ModelAndView mav;
+		//校验requestMethod和requireSession
 		checkRequest(request);
 
 		// Execute invokeHandlerMethod in synchronized block if required.
+		// session线程不安全，如果想用户多次请求都访问同一个session需要加一个全局锁。。性能极差很少见
 		if (this.synchronizeOnSession) {
 			HttpSession session = request.getSession(false);
 			if (session != null) {
@@ -790,6 +792,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		}
 		else {
 			// No synchronization on session demanded at all...
+			// 关键方法，代理方法执行handlerMethod,返回modelAndView
 			mav = invokeHandlerMethod(request, response, handlerMethod);
 		}
 
@@ -844,7 +847,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	@Nullable
 	protected ModelAndView invokeHandlerMethod(HttpServletRequest request,
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
-
+		//todo 书签
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		try {
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
@@ -885,6 +888,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				invocableMethod = invocableMethod.wrapConcurrentResult(result);
 			}
 
+			//todo 关键代码
 			invocableMethod.invokeAndHandle(webRequest, mavContainer);
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				return null;
