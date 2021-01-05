@@ -558,6 +558,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		// Do this first, it may add ResponseBody advice beans
 		initControllerAdviceCache();
 
+		//很重要，参数解释器，用来解析request的参数
 		if (this.argumentResolvers == null) {
 			List<HandlerMethodArgumentResolver> resolvers = getDefaultArgumentResolvers();
 			this.argumentResolvers = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
@@ -850,17 +851,18 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		//HttpServletRequest 的封装
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		try {
-			//用来处理request中的参数映射
+			//用来处理request中的参数映射，WebDataBinderFactory里的值见：afterPropertiesSet
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
 			//用来创建初始化model
 			ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
 			//根据handlerMethod实例化一个ServletInvocableHandlerMethod来处理请求
 			ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);
-			//设置argumentResolvers处理request的参数
+			//设置argumentResolvers处理request的参数 argumentResolvers里的值见afterPropertiesSet
 			if (this.argumentResolvers != null) {
 				invocableMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
 			}
-			//设置argumentResolvers处理response的参数。TODO 比如想给所有的ResponseBody返回值封装成{code:0,msg:1,data:null}
+			//设置argumentResolvers处理response的参数 returnValueHandlers里的值见afterPropertiesSet
+			// 可自定义 TODO 比如想给所有的ResponseBody返回值封装成{code:0,msg:1,data:null}
 			if (this.returnValueHandlers != null) {
 				invocableMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
 			}
@@ -874,7 +876,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			modelFactory.initModel(webRequest, mavContainer, invocableMethod);
 			mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
 
-			//todo 微刊
+			//todo 未读
 			AsyncWebRequest asyncWebRequest = WebAsyncUtils.createAsyncWebRequest(request, response);
 			asyncWebRequest.setTimeout(this.asyncRequestTimeout);
 

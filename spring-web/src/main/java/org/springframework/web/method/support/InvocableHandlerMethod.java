@@ -130,11 +130,12 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	@Nullable
 	public Object invokeForRequest(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		//从request里获取controller执行方法的参数
 		Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Arguments: " + Arrays.toString(args));
 		}
+		//代理执行方法
 		return doInvoke(args);
 	}
 
@@ -185,6 +186,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 */
 	@Nullable
 	protected Object doInvoke(Object... args) throws Exception {
+		//todo 书签
 		ReflectionUtils.makeAccessible(getBridgedMethod());
 		try {
 			return getBridgedMethod().invoke(getBean(), args);
