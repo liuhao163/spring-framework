@@ -847,27 +847,34 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	@Nullable
 	protected ModelAndView invokeHandlerMethod(HttpServletRequest request,
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
-		//todo 书签
+		//HttpServletRequest 的封装
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		try {
+			//用来处理request中的参数映射
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
+			//用来创建初始化model
 			ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
-
+			//根据handlerMethod实例化一个ServletInvocableHandlerMethod来处理请求
 			ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);
+			//设置argumentResolvers处理request的参数
 			if (this.argumentResolvers != null) {
 				invocableMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
 			}
+			//设置argumentResolvers处理response的参数。TODO 比如想给所有的ResponseBody返回值封装成{code:0,msg:1,data:null}
 			if (this.returnValueHandlers != null) {
 				invocableMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
 			}
 			invocableMethod.setDataBinderFactory(binderFactory);
 			invocableMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
 
+			//modelAndView的上下文对象
 			ModelAndViewContainer mavContainer = new ModelAndViewContainer();
 			mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));
+			//初始化Model对象，同时将sessionAtrributes值和ModelAtrributes的值都合并在一起放在Model中
 			modelFactory.initModel(webRequest, mavContainer, invocableMethod);
 			mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
 
+			//todo 微刊
 			AsyncWebRequest asyncWebRequest = WebAsyncUtils.createAsyncWebRequest(request, response);
 			asyncWebRequest.setTimeout(this.asyncRequestTimeout);
 
@@ -888,7 +895,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				invocableMethod = invocableMethod.wrapConcurrentResult(result);
 			}
 
-			//todo 关键代码
+			//todo 书签 关键代码，通过handlerMethod的代理方法，执行Controller的方法，将结果存储到mavContainer
 			invocableMethod.invokeAndHandle(webRequest, mavContainer);
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				return null;
