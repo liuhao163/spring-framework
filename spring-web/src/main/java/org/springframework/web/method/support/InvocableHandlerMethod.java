@@ -189,6 +189,10 @@ public class InvocableHandlerMethod extends HandlerMethod {
 		ReflectionUtils.makeAccessible(getBridgedMethod());
 		try {
 			//todo 通过反射执行方法 书签
+			//调用java反射包的invoke 代理执行HandlerMethod里econtroller对应的方法
+			// getBridgedMethod= 如果没有意外等于controller被执行的方法
+			// getBean()=Controller对象
+			// args=request通过argumentResolver得到的方法参数对象
 			return getBridgedMethod().invoke(getBean(), args);
 		}
 		catch (IllegalArgumentException ex) {
