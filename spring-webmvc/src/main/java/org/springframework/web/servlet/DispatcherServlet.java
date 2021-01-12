@@ -1095,7 +1095,21 @@ public class DispatcherServlet extends FrameworkServlet {
 				// 调用路径是AbstractHandlerMethodAdapter.handle()-->AbstractHandlerMethodAdapter.handleInternal()-->ha的类型是RequestMappingHandlerAdapter.handleInternal
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
-				//todo ???
+				/**
+				 * todo 带看的组件
+				 * WebDataBinderFactory
+				 * ModelFactory
+				 *
+				 * ServletInvocableHandlerMethod
+				 *
+				 * HandlerMethodArgumentResolverComposite
+				 * HandlerMethodReturnValueHandlerComposite
+				 *
+				 * ModelAndViewContainer
+				 * modelAndView
+				 */
+
+				//todo asyncManager 待看
 				if (asyncManager.isConcurrentHandlingStarted()) {
 					return;
 				}

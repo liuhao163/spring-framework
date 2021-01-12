@@ -122,7 +122,8 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 		mavContainer.setRequestHandled(false);
 		Assert.state(this.returnValueHandlers != null, "No return value handlers");
 		try {
-			//todo 书签
+			//调用returnValueHandlers 将返回值写到response中（webRequest.getNativeResponse)里
+			// 由于现在开发采用前后端分离，RestApi往往会用到RequestResponseBodyMethodProcessor，可以看这个类，返回值和controller方法有@ResponseBody
 			this.returnValueHandlers.handleReturnValue(
 					returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
 		}
